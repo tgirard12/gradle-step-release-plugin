@@ -1,0 +1,28 @@
+## Gradle template
+.gradle
+/build/
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+## JetBrains
+.idea
+
+out/
+
+## Kotlin template
+*.class
+*.log
+*.jar
+*.war# Package Files #
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
