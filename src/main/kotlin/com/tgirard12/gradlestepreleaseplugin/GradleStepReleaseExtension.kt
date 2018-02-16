@@ -123,4 +123,9 @@ open class GradleStepReleaseExtension {
                     "\n\nTag Created ?")
     )
 
+    fun gitlabMilestone() = Step(
+            title = "Gitlab Milestone UI",
+            validation = Step.Validation("$gitlabUrl/$gitlabGroup/$gitlabProject/milestones/new" +
+                    "\n\nMilestone Created ?")
+    )
 }
