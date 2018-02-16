@@ -43,4 +43,30 @@ open class GradleStepReleaseExtension {
             },
             step = {}
     )
+
+    fun setProperties(propsKeys: List<String>, propFile: String = gradleProperties) = Step(
+            title = "Set properties",
+            step = {
+                "New value to update ?".console()
+                read()?.let { input ->
+                    val lines = File(propFile)
+                            .readLines()
+
+                    val mutLines = lines.toMutableList()
+
+                    propsKeys.forEach { prop ->
+                        lines
+                                .indexOfFirst { it.split("=")[0] == prop }
+                                .takeIf { it > -1 }
+                                ?.let {
+                                    mutLines.set(it, lines[it].replaceAfterLast("=", input))
+                                }
+                    }
+
+                    File(propFile).writeText(mutLines.joinToString("\n"))
+
+                    return@let input
+                }
+            }
+    )
 }
