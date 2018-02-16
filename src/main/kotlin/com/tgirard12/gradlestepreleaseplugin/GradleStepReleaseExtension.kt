@@ -69,4 +69,36 @@ open class GradleStepReleaseExtension {
                 }
             }
     )
+
+    // Git Action
+
+    fun gitCheckout(branch: String) = Step(
+            title = "git checkout",
+            step = { "git checkout $branch".runCommand() }
+    )
+
+    fun gitAdd(files: List<String>) = Step(
+            title = "git add",
+            step = { "git add ${files.joinToString(separator = " ")}".runCommand() }
+    )
+
+    fun gitCommit(message: String) = Step(
+            title = "git commit",
+            step = { """git commit -m "$message" """.runCommand() }
+    )
+
+    fun gitMerge(remote: String = "origin", branch: String) = Step(
+            title = "git merge",
+            step = { "git merge $remote $branch".runCommand() }
+    )
+
+    fun gitPull(remote: String = "origin", branch: String) = Step(
+            title = "git merge",
+            step = { "git merge $remote $branch".runCommand() }
+    )
+
+    fun gitPush(remote: String = "origin", branch: String) = Step(
+            title = "git push",
+            step = { "git push $remote $branch".runCommand() }
+    )
 }
