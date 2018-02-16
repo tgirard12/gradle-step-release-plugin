@@ -101,4 +101,18 @@ open class GradleStepReleaseExtension {
             title = "git push",
             step = { "git push $remote $branch".runCommand() }
     )
+
+    // Gitlab Action
+
+    var gitlabUrl: String? = null
+    var gitlabGroup: String? = null
+    var gitlabProject: String? = null
+
+    fun gitlabMergeRequest(sourceBranch: String, targetBranch: String) = Step(
+            title = "GitLab Merge Request UI",
+            validation = Step.Validation("$gitlabUrl/$gitlabGroup/$gitlabProject/merge_requests/new?utf8=%E2%9C%93" +
+                    "&merge_request%5Bsource_branch%5D=$sourceBranch" +
+                    "&merge_request%5Btarget_branch%5D=$targetBranch" +
+                    "\n\nMerge Request done ?")
+    )
 }
