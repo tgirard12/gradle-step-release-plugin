@@ -25,7 +25,7 @@ open class GradleStepReleaseTask : DefaultTask() {
             "".console()
             step.validation?.let {
                 step.validation.beforeMessage.invoke()
-                "${step.validation.message} [y, yes] ?".validateQuestion()
+                "${step.validation.message} [y, yes]".validateQuestion()
             }
             step.step()?.let { extension.stepResult.put(index, it) }
             "".console()
