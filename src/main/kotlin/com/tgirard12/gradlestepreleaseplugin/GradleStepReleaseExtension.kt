@@ -115,4 +115,12 @@ open class GradleStepReleaseExtension {
                     "&merge_request%5Btarget_branch%5D=$targetBranch" +
                     "\n\nMerge Request done ?")
     )
+
+    fun gitlabTag(tagName: String, branch: String) = Step(
+            title = "Gitlab tag UI",
+            validation = Step.Validation("$gitlabUrl/$gitlabGroup/$gitlabProject/tags/new?" +
+                    "tag_name=$tagName&ref=$branch" +
+                    "\n\nTag Created ?")
+    )
+
 }
