@@ -31,33 +31,31 @@ open class GradleStepReleaseTask : DefaultTask() {
             "".console()
         }
     }
-
-    //
-    fun read() = readLine().apply { this?.console() }
-
-    fun String.console(): Unit = println(this)
-
-    fun String.validateQuestion() {
-        this.console()
-        val line = read()
-        if (line != "y" && line != "yes")
-            throw IllegalArgumentException("Validation fail, Exit task ")
-    }
-
-    fun String.runCommand() {
-        try {
-            "$> $this".console()
-            val parts = this.split("\\s".toRegex())
-            val proc = ProcessBuilder(*parts.toTypedArray())
-                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                    .redirectError(ProcessBuilder.Redirect.PIPE)
-                    .start()
-
-            proc.waitFor(10, TimeUnit.SECONDS)
-            proc.inputStream.bufferedReader().readText().console()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
 }
+
+fun read() = readLine().apply { this?.console() }
+
+fun String.validateQuestion() {
+    this.console()
+    val line = read()
+    if (line != "y" && line != "yes")
+        throw IllegalArgumentException("Validation fail, Exit task ")
+}
+
+fun String.runCommand() {
+    try {
+        "$> $this".console()
+        val parts = this.split("\\s".toRegex())
+        val proc = ProcessBuilder(*parts.toTypedArray())
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
+
+        proc.waitFor(10, TimeUnit.SECONDS)
+        proc.inputStream.bufferedReader().readText().console()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+}
+
+fun String.console(): Unit = println(this)
