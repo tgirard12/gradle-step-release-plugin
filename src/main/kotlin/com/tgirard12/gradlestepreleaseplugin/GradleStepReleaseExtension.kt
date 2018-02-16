@@ -102,6 +102,11 @@ open class GradleStepReleaseExtension {
             step = { "git push $remote $branch".runCommand() }
     )
 
+    fun gitTag(name: String, message: String? = null) = Step(
+            title = """git tag""",
+            step = { """git tag ${message?.let { "-m $message - a" }} $name""".runCommand() }
+    )
+
     // Gitlab Action
 
     var gitlabUrl: String? = null
