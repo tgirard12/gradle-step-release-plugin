@@ -4,6 +4,7 @@ import java.io.File
 import java.util.*
 
 
+@Suppress("unused")
 open class GradleStepReleaseExtension {
 
     // Const
@@ -109,7 +110,7 @@ open class GradleStepReleaseExtension {
 
     // Gitlab Action
 
-    var gitlabUrl: String? = null
+    var gitlabUrl: String = "https://gitlab.com"
     var gitlabGroup: String? = null
     var gitlabProject: String? = null
 
@@ -118,7 +119,7 @@ open class GradleStepReleaseExtension {
             validation = Step.Validation("$gitlabUrl/$gitlabGroup/$gitlabProject/merge_requests/new?utf8=%E2%9C%93" +
                     "&merge_request%5Bsource_branch%5D=$sourceBranch" +
                     "&merge_request%5Btarget_branch%5D=$targetBranch" +
-                    "\n\nMerge Request done ?")
+                    "\n\nMerge Request merged ?")
     )
 
     fun gitlabTag(tagName: String, branch: String) = Step(
