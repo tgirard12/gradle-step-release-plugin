@@ -93,8 +93,8 @@ open class GradleStepReleaseExtension {
     )
 
     fun gitPull(remote: String = "origin", branch: String) = Step(
-            title = "git merge",
-            step = { "git merge $remote $branch".runCommand() }
+            title = "git pull",
+            step = { "git pull $remote $branch".runCommand() }
     )
 
     fun gitPush(remote: String = "origin", branch: String) = Step(
