@@ -134,4 +134,16 @@ open class GradleStepReleaseExtension {
             validation = Step.Validation("$gitlabUrl/$gitlabGroup/$gitlabProject/milestones/new" +
                     "\n\nMilestone Created ?")
     )
+
+    // GitHub Action
+
+    var githubUrl: String = "https://github.com"
+    var githubGroup: String? = null
+    var githubProject: String? = null
+
+    fun githubPullRequest(sourceBranch: String, targetBranch: String) = Step(
+            title = "GitHub Pull Request UI",
+            validation = Step.Validation("$githubUrl/$githubGroup/$githubProject/compare/$targetBranch...$sourceBranch" +
+                    "\n\nPull Request merged ?")
+    )
 }
