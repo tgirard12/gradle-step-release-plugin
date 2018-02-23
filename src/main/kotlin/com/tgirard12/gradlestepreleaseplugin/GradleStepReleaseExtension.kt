@@ -152,4 +152,10 @@ open class GradleStepReleaseExtension {
             validation = Step.Validation("$githubUrl/$githubGroup/$githubProject/releases/new" +
                     "\n\nRelease Created ?")
     )
+
+    fun githubMilestone() = Step(
+            title = "GitHub Milestone UI",
+            validation = Step.Validation("$githubUrl/$githubGroup/$githubProject/milestones/new" +
+                    "\n\nMilestone Created ?")
+    )
 }
