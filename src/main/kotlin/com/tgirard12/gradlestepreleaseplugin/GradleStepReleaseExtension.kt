@@ -146,4 +146,10 @@ open class GradleStepReleaseExtension {
             validation = Step.Validation("$githubUrl/$githubGroup/$githubProject/compare/$targetBranch...$sourceBranch" +
                     "\n\nPull Request merged ?")
     )
+
+    fun githubRelease() = Step(
+            title = "GitHub Release UI",
+            validation = Step.Validation("$githubUrl/$githubGroup/$githubProject/releases/new" +
+                    "\n\nRelease Created ?")
+    )
 }
