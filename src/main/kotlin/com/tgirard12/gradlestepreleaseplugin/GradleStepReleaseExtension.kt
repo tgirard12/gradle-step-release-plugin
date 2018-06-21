@@ -17,10 +17,23 @@ open class GradleStepReleaseExtension {
 
     // Simples
 
+    fun message(message: String) = Step(
+        title = "Message",
+        step = { message.println() }
+    )
+
     fun question(message: String) = Step(
         title = "Question",
         validation = Step.Validation(message),
         step = { null }
+    )
+
+    fun read(message: String) = Step(
+        title = "Message",
+        step = {
+            message.println()
+            readLine()
+        }
     )
 
     fun step(title: String = "step", step: () -> Any?) = Step(
@@ -189,7 +202,13 @@ fun String.question() {
         throw IllegalArgumentException("question fail, Exit")
 }
 
-fun String.exec(): String? {
+data class ExecRes(
+    val exitValue: Int,
+    val input: String?,
+    val error: String?
+)
+
+fun String.exec(exitValue: Int? = 0): ExecRes {
     try {
         "$> $this".println()
         val parts = this.split("\\s".toRegex())
@@ -205,22 +224,21 @@ fun String.exec(): String? {
             .takeIf { it.isNotBlank() }
             ?.apply { this.println() }
 
-        proc.errorStream
+        val error: String? = proc.errorStream
             .bufferedReader()
             .readText()
             .takeIf { it.isNotBlank() }
             ?.apply { "ERROR => " + this.println() }
 
-        proc.exitValue()
-            .takeIf { it != 0 }
-            ?.let {
-                println("ERROR => EXIT with `$it`")
-                exitProcess(it)
-            }
-        return output?.trim()
+        val resValue: Int = proc.exitValue()
+        if (exitValue != null && exitValue != resValue) {
+            println("ERROR => EXIT with `$resValue`")
+            exitProcess(resValue)
+        }
+        return ExecRes(resValue, output, error)
 
     } catch (ex: Exception) {
         ex.printStackTrace()
-        exitProcess(-1)
+        return ExecRes(-1, null, ex.message + ex.stackTrace.toString())
     }
 }

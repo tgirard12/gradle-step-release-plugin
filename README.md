@@ -50,7 +50,9 @@ releaseStep {
 
 ### Simple step
 
-- `question("Release")`
+- `question("Release a new version ?")`
+- `message("Simple message")`
+- `read("Read a value"): String`
 - `step { println("Custom step") }`
 
 
