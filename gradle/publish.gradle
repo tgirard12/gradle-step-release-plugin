@@ -20,6 +20,27 @@ publishing {
     }
 }
 
+// Create the pom configuration:
+def pomConfig = {
+    licenses {
+        license {
+            name = "The Apache Software License, Version 2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution = "repo"
+        }
+    }
+    developers {
+        developer {
+            id = bintrayUser
+            name = userName
+            email = userEmail
+        }
+    }
+    scm {
+        url = bintray_githubRepo
+    }
+}
+
 // Upload Bintray
 bintray {
     user = bintrayUser
