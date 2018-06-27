@@ -2,9 +2,12 @@ package com.tgirard12.gradlestepreleaseplugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.slf4j.LoggerFactory
 
 
 open class GradleStepReleaseTask : DefaultTask() {
+
+    val log = LoggerFactory.getLogger(GradleStepReleaseTask::class.java)
 
     val extension: GradleStepReleaseExtension by lazy {
         project.extensions.getByType(GradleStepReleaseExtension::class.java)
@@ -13,8 +16,8 @@ open class GradleStepReleaseTask : DefaultTask() {
     @TaskAction
     fun gradleStepReleaseTask() {
         if (extension.steps.isEmpty())
-            throw IllegalArgumentException(
-                """You must define at least one Step in releaseStep {
+            log.info(
+                """releaseStep.stepResult : You must define at least one Step in releaseStep {
                         |   steps = [...]
                         |}""".trimMargin()
             )
@@ -26,7 +29,9 @@ open class GradleStepReleaseTask : DefaultTask() {
                 step.validation.beforeMessage.invoke()
                 "${step.validation.message} [y, yes]".question()
             }
-            step.step()?.let { extension.stepResult.put(index, it) }
+            val stepRes = step.step()
+            log.info("releaseStep.step '${step.title}'=$stepRes")
+            step.stepResult = stepRes
             "".println()
         }
     }

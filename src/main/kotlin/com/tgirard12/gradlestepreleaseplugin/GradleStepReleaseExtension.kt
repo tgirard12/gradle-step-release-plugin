@@ -12,20 +12,22 @@ open class GradleStepReleaseExtension {
     // Const
     val gradleProperties = "gradle.properties"
 
-    var stepResult = mutableMapOf<Int, Any?>()
     var steps = mutableListOf<Step>()
 
     // Simples
 
     fun message(message: String) = Step(
         title = "Message",
-        step = { message.println() }
+        step = {
+            message.println()
+            Unit
+        }
     )
 
     fun question(message: String) = Step(
         title = "Question",
         validation = Step.Validation(message),
-        step = { null }
+        step = { Unit }
     )
 
     fun read(message: String) = Step(
@@ -57,7 +59,7 @@ open class GradleStepReleaseExtension {
                 .joinToString("\n", postfix = "\n")
                 .println()
         },
-        step = {}
+        step = { Unit }
     )
 
     fun setProperties(propsKeys: List<String>, propFile: String = gradleProperties) = Step(
@@ -90,37 +92,37 @@ open class GradleStepReleaseExtension {
 
     fun gitCheckout(branch: String) = Step(
         title = "git checkout",
-        step = { "git checkout $branch".exec() }
+        step = { "git checkout $branch".exec().exitValue }
     )
 
     fun gitAdd(files: List<String>) = Step(
         title = "git add",
-        step = { "git add ${files.joinToString(separator = " ")}".exec() }
+        step = { "git add ${files.joinToString(separator = " ")}".exec().exitValue }
     )
 
     fun gitCommit(message: String) = Step(
         title = "git commit",
-        step = { """git commit -m "$message" """.exec() }
+        step = { """git commit -m '$message' """.exec().exitValue }
     )
 
     fun gitMerge(remote: String = "origin", branch: String) = Step(
         title = "git merge",
-        step = { "git merge $remote $branch".exec() }
+        step = { "git merge $remote $branch".exec().exitValue }
     )
 
     fun gitPull(remote: String = "origin", branch: String) = Step(
         title = "git pull",
-        step = { "git pull $remote $branch".exec() }
+        step = { "git pull $remote $branch".exec().exitValue }
     )
 
     fun gitPush(remote: String = "origin", branch: String) = Step(
         title = "git push",
-        step = { "git push $remote $branch".exec() }
+        step = { "git push $remote $branch".exec().exitValue }
     )
 
     fun gitTag(name: String, message: String? = null) = Step(
         title = """git tag""",
-        step = { """git tag ${message?.let { "-m $message - a" }} $name""".exec() }
+        step = { """git tag ${message?.let { "-m $message - a" }} $name""".exec().exitValue }
     )
 
     // Gitlab Action
@@ -185,6 +187,8 @@ open class GradleStepReleaseExtension {
                     "\n\nMilestone Created ?"
         )
     )
+
+    fun exec(command: String) = command.exec()
 }
 
 // Common functions
