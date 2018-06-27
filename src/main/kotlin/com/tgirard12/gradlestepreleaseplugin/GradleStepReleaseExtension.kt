@@ -24,9 +24,23 @@ open class GradleStepReleaseExtension {
         }
     )
 
+    fun message(message: () -> String) = Step(
+        title = "Message",
+        step = {
+            message().println()
+            Unit
+        }
+    )
+
     fun question(message: String) = Step(
         title = "Question",
         validation = Step.Validation(message),
+        step = { Unit }
+    )
+
+    fun question(message: () -> String) = Step(
+        title = "Question",
+        validation = Step.Validation(message()),
         step = { Unit }
     )
 
@@ -90,19 +104,19 @@ open class GradleStepReleaseExtension {
 
     // Git Action
 
-    fun gitCheckout(branch: String) = Step(
+    fun gitCheckout(branch: () -> String) = Step(
         title = "git checkout",
-        step = { "git checkout $branch".exec().exitValue }
+        step = { "git checkout ${branch()}".exec().exitValue }
     )
 
-    fun gitAdd(files: List<String>) = Step(
+    fun gitAdd(files: () -> List<String>) = Step(
         title = "git add",
-        step = { "git add ${files.joinToString(separator = " ")}".exec().exitValue }
+        step = { "git add ${files().joinToString(separator = " ")}".exec().exitValue }
     )
 
-    fun gitCommit(message: String) = Step(
+    fun gitCommit(message: () -> String) = Step(
         title = "git commit",
-        step = { """git commit -m '$message' """.exec().exitValue }
+        step = { """git commit -m '${message()}' """.exec().exitValue }
     )
 
     fun gitMerge(remote: String = "origin", branch: String) = Step(
@@ -120,9 +134,9 @@ open class GradleStepReleaseExtension {
         step = { "git push $remote $branch".exec().exitValue }
     )
 
-    fun gitTag(name: String, message: String? = null) = Step(
+    fun gitTag(name: () -> String, message: () -> String? = { null }) = Step(
         title = """git tag""",
-        step = { """git tag ${message?.let { "-m $message - a" }} $name""".exec().exitValue }
+        step = { """git tag ${message()?.let { "-m ${message()} -a" }} ${name()}""".exec().exitValue }
     )
 
     // Gitlab Action
