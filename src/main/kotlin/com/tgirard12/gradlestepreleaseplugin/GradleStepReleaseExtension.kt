@@ -111,12 +111,16 @@ open class GradleStepReleaseExtension {
 
     fun gitAdd(files: () -> List<String>) = Step(
         title = "git add",
-        step = { "git add ${files().joinToString(separator = " ")}".exec().exitValue }
+        step = {
+            files().forEach {
+                "git add $it".exec().exitValue
+            }
+        }
     )
 
     fun gitCommit(message: () -> String) = Step(
         title = "git commit",
-        step = { """git commit -m '${message()}' """.exec().exitValue }
+        step = { "git commit -m \"" + message() + "\" ".exec().exitValue }
     )
 
     fun gitMerge(remote: String = "origin", branch: String) = Step(
