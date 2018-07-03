@@ -1,9 +1,10 @@
 package com.tgirard12.gradlestepreleaseplugin
 
+import org.gradle.api.Project
+import org.slf4j.LoggerFactory
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.system.exitProcess
 
 
 @Suppress("unused")
@@ -100,41 +101,48 @@ open class GradleStepReleaseExtension {
 
     fun gitCheckout(branch: () -> String) = Step(
         title = "git checkout",
-        step = { "git checkout ${branch()}".exec().exitValue }
+        step = { exec("git", listOf("checkout", branch())) }
     )
 
     fun gitAdd(files: () -> List<String>) = Step(
         title = "git add",
         step = {
-            files().forEach {
-                "git add $it".exec().exitValue
+            files().forEach { file ->
+                exec("git", listOf("add", file))
             }
         }
     )
 
     fun gitCommit(message: () -> String) = Step(
         title = "git commit",
-        step = { "git commit -m \"" + message() + "\" ".exec().exitValue }
+        step = { exec("git", listOf("commit", "-m", message())) }
     )
 
     fun gitMerge(remote: String = "origin", branch: String) = Step(
         title = "git merge",
-        step = { "git merge $remote $branch".exec().exitValue }
+        step = { exec("git", listOf("merge", remote, branch)) }
     )
 
     fun gitPull(remote: String = "origin", branch: String) = Step(
         title = "git pull",
-        step = { "git pull $remote $branch".exec().exitValue }
+        step = { exec("git", listOf("pull", remote, branch)) }
     )
 
     fun gitPush(remote: String = "origin", branch: String) = Step(
         title = "git push",
-        step = { "git push $remote $branch".exec().exitValue }
+        step = { exec("git", listOf("push", remote, branch)) }
     )
 
     fun gitTag(name: () -> String, message: () -> String? = { null }) = Step(
         title = """git tag""",
-        step = { """git tag ${message()?.let { "-m ${message()} -a" }} ${name()}""".exec().exitValue }
+        step = {
+            val args = mutableListOf("tag", "-a", name())
+            message()?.let {
+                args.add("-m")
+                args.add(it)
+            }
+            exec("git", args)
+        }
     )
 
     // Gitlab Action
@@ -199,9 +207,6 @@ open class GradleStepReleaseExtension {
                     "\n\nMilestone Created ?"
         )
     )
-
-    fun exec(command: String) = command.exec()
-}
 
 // Common functions
 
