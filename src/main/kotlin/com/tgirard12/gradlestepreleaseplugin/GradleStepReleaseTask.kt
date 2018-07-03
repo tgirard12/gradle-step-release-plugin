@@ -24,17 +24,18 @@ open class GradleStepReleaseTask : DefaultTask() {
                         |}""".trimMargin()
             )
 
-        extension.steps.forEachIndexed { index, step ->
-            "## Step : ${step.title}".println()
-            "".println()
-            step.validation?.let {
-                step.validation.beforeMessage.invoke()
-                "${step.validation.message} [y, yes]".question()
+        extension.steps.forEach { step ->
+            extension.apply {
+                "## Step `${step.title}` > ".print()
+                step.validation?.let {
+                    step.validation.beforeMessage.invoke()
+                    "${step.validation.message} [y, yes]".question()
+                }
+                val stepRes = step.step()
+                log.info("releaseStep.step '${step.title}'=$stepRes")
+                step.stepResult = stepRes
+                "".println()
             }
-            val stepRes = step.step()
-            log.info("releaseStep.step '${step.title}'=$stepRes")
-            step.stepResult = stepRes
-            "".println()
         }
     }
 }

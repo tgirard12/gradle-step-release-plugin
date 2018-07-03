@@ -214,56 +214,34 @@ open class GradleStepReleaseExtension {
 
 // Common functions
 
-fun String.println(): Unit = println(this)
-fun String.print(): Unit = print(this)
+    fun String.println(): Unit = println(this)
+    fun String.print(): Unit = print(this)
 
-fun read() = readLine().apply { println(this) }
+    fun read() = readLine()
 
-fun String.question() {
-    this.println()
-    "$< ".print()
-    val line = read()
-    if (line != "y" && line != "yes")
-        throw IllegalArgumentException("question fail, Exit")
-}
+    fun String.question() {
+        this.println()
+        val line = read()
+        if (line != "y" && line != "yes")
+            throw IllegalArgumentException("question fail, Exit")
+    }
 
-data class ExecRes(
-    val exitValue: Int,
-    val input: String?,
-    val error: String?
-)
+    data class ExecRes(
+        val exitValue: Int,
+        val input: String?,
+        val error: String?
+    )
 
-fun String.exec(exitValue: Int? = 0): ExecRes {
-    try {
-        "$> $this".println()
-        val parts = this.split("\\s".toRegex())
-        val proc = ProcessBuilder(*parts.toTypedArray())
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.PIPE)
-            .start()
-        proc.waitFor(10, TimeUnit.SECONDS)
-
-        val output: String? = proc.inputStream
-            .bufferedReader()
-            .readText()
-            .takeIf { it.isNotBlank() }
-            ?.apply { this.println() }
-
-        val error: String? = proc.errorStream
-            .bufferedReader()
-            .readText()
-            .takeIf { it.isNotBlank() }
-            ?.apply { "ERROR => " + this.println() }
-
-        val resValue: Int = proc.exitValue()
-        if (exitValue != null && exitValue != resValue) {
-            println("ERROR => EXIT with `$resValue`")
-            exitProcess(resValue)
-        }
-        return ExecRes(resValue, output, error)
-
-    } catch (ex: Exception) {
-        ex.printStackTrace()
-        return ExecRes(-1, null, ex.message + ex.stackTrace.toString())
+    private fun exec(command: String, args: List<String>): ExecRes {
+        val stdout = ByteArrayOutputStream()
+        val stderr = ByteArrayOutputStream()
+        val res = project.exec { exec ->
+            exec.standardOutput = stdout
+            exec.errorOutput = stderr
+            exec.workingDir = project.rootDir
+            exec.commandLine = listOf(command)
+            exec.args = args
+        }.exitValue
+        return ExecRes(res, stdout.toString(), stderr.toString())
     }
 }
