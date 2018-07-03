@@ -19,14 +19,6 @@ open class GradleStepReleaseExtension {
 
     // Simples
 
-    fun message(message: String) = Step(
-        title = "Message",
-        step = {
-            message.println()
-            Unit
-        }
-    )
-
     fun message(message: () -> String) = Step(
         title = "Message",
         step = {
@@ -35,28 +27,27 @@ open class GradleStepReleaseExtension {
         }
     )
 
-    fun question(message: String) = Step(
-        title = "Question",
-        validation = Step.Validation(message),
-        step = { Unit }
-    )
-
     fun question(message: () -> String) = Step(
         title = "Question",
         validation = Step.Validation(message()),
         step = { Unit }
     )
 
-    fun read(message: String) = Step(
-        title = "Message",
+    fun read(message: () -> String) = Step(
+        title = "Read",
         step = {
-            message.println()
+            message().println()
             readLine()
         }
     )
 
     fun step(title: String = "step", step: () -> Any?) = Step(
         title = title,
+        step = step
+    )
+
+    fun step(step: () -> Any?) = Step(
+        title = "step",
         step = step
     )
 
@@ -162,11 +153,11 @@ open class GradleStepReleaseExtension {
         )
     )
 
-    fun gitlabTag(tagName: String, branch: String) = Step(
+    fun gitlabTag(tagName: () -> String, branch: String) = Step(
         title = "Gitlab tag UI",
         validation = Step.Validation(
             "$gitlabUrl/$gitlabGroup/$gitlabProject/tags/new?" +
-                    "tag_name=$tagName&ref=$branch" +
+                    "tag_name=${tagName()}&ref=$branch" +
                     "\n\nTag Created ?"
         )
     )
