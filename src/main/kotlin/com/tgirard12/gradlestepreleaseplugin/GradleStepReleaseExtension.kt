@@ -9,6 +9,9 @@ import kotlin.system.exitProcess
 @Suppress("unused")
 open class GradleStepReleaseExtension {
 
+    val log = LoggerFactory.getLogger(GradleStepReleaseExtension::class.java)
+    internal lateinit var project: Project
+
     // Const
     val gradleProperties = "gradle.properties"
 

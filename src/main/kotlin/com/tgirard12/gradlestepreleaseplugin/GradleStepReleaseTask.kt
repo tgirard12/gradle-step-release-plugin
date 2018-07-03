@@ -10,7 +10,9 @@ open class GradleStepReleaseTask : DefaultTask() {
     val log = LoggerFactory.getLogger(GradleStepReleaseTask::class.java)
 
     val extension: GradleStepReleaseExtension by lazy {
-        project.extensions.getByType(GradleStepReleaseExtension::class.java)
+        val ext = project.extensions.getByType(GradleStepReleaseExtension::class.java)
+        ext.project = project
+        ext
     }
 
     @TaskAction
