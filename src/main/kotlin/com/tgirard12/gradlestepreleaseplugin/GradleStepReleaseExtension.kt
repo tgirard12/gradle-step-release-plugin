@@ -21,7 +21,7 @@ open class GradleStepReleaseExtension {
     // Simples
 
     fun message(message: () -> String) = CustomTask(
-        title = "Message",
+        title = "message",
         step = {
             message().println()
             Unit
@@ -29,26 +29,26 @@ open class GradleStepReleaseExtension {
     )
 
     fun question(message: () -> String) = CustomTask(
-        title = "Question",
+        title = "question",
         validation = StepTask.Validation(message()),
         step = { Unit }
     )
 
     fun read(message: () -> String) = CustomTask(
-        title = "Read",
+        title = "read",
         step = {
             message().println()
             readLine()
         }
     )
 
-    fun step(title: String = "Step", step: () -> Any?) = CustomTask(
+    fun step(title: String = "step", step: () -> Any?) = CustomTask(
         title = title,
         step = step
     )
 
     fun step(step: () -> Any?) = CustomTask(
-        title = "Step",
+        title = "step",
         step = step
     )
 
@@ -59,7 +59,7 @@ open class GradleStepReleaseExtension {
     // Properties
 
     fun checkProperties(propsKeys: List<String>, propFile: String = gradleProperties) = CustomTask(
-        title = "Check properties",
+        title = "checkProperties",
         validation = StepTask.Validation("All is OK") {
             Properties().apply {
                 File(propFile)
@@ -76,7 +76,7 @@ open class GradleStepReleaseExtension {
     )
 
     fun setProperties(propsKeys: List<String>, propFile: String = gradleProperties) = CustomTask(
-        title = "Set properties",
+        title = "setProperties",
         step = {
             "New value to update ?".println()
             read()?.let { input ->
@@ -104,12 +104,12 @@ open class GradleStepReleaseExtension {
     // Git Action
 
     fun gitCheckout(branch: () -> String) = CustomTask(
-        title = "git checkout",
+        title = "gitCheckout",
         step = { exec("git", listOf("checkout", branch())) }
     )
 
     fun gitAdd(files: () -> List<String>) = CustomTask(
-        title = "git add",
+        title = "gitAdd",
         step = {
             files().forEach { file ->
                 exec("git", listOf("add", file))
@@ -118,27 +118,27 @@ open class GradleStepReleaseExtension {
     )
 
     fun gitCommit(message: () -> String) = CustomTask(
-        title = "git commit",
+        title = "gitCommit",
         step = { exec("git", listOf("commit", "-m", message())) }
     )
 
     fun gitMerge(remote: String = "origin", branch: String) = CustomTask(
-        title = "git merge",
+        title = "gitMerge",
         step = { exec("git", listOf("merge", remote, branch)) }
     )
 
     fun gitPull(remote: String = "origin", branch: String) = CustomTask(
-        title = "git pull",
+        title = "gitPull",
         step = { exec("git", listOf("pull", remote, branch)) }
     )
 
     fun gitPush(remote: String = "origin", branch: String) = CustomTask(
-        title = "git push",
+        title = "gitPush",
         step = { exec("git", listOf("push", remote, branch)) }
     )
 
     fun gitTag(name: () -> String, message: () -> String? = { null }) = CustomTask(
-        title = """git tag""",
+        title = "gitTag",
         step = {
             val args = mutableListOf("tag", "-a", name())
             message()?.let {
@@ -156,7 +156,7 @@ open class GradleStepReleaseExtension {
     var gitlabProject: String? = null
 
     fun gitlabMergeRequest(sourceBranch: String, targetBranch: String) = CustomTask(
-        title = "GitLab Merge Request UI",
+        title = "gitLabMergeRequest",
         validation = StepTask.Validation(
             "$gitlabUrl/$gitlabGroup/$gitlabProject/merge_requests/new?utf8=%E2%9C%93" +
                     "&merge_request%5Bsource_branch%5D=$sourceBranch" +
@@ -166,7 +166,7 @@ open class GradleStepReleaseExtension {
     )
 
     fun gitlabTag(tagName: () -> String, branch: String) = CustomTask(
-        title = "Gitlab tag UI",
+        title = "gitlabTag",
         validation = StepTask.Validation(
             "$gitlabUrl/$gitlabGroup/$gitlabProject/tags/new?" +
                     "tag_name=${tagName()}&ref=$branch" +
@@ -175,7 +175,7 @@ open class GradleStepReleaseExtension {
     )
 
     fun gitlabMilestone() = CustomTask(
-        title = "Gitlab Milestone UI",
+        title = "gitlabMilestone",
         validation = StepTask.Validation(
             "$gitlabUrl/$gitlabGroup/$gitlabProject/milestones/new" +
                     "\n\nMilestone Created ?"
@@ -189,7 +189,7 @@ open class GradleStepReleaseExtension {
     var githubProject: String? = null
 
     fun githubPullRequest(sourceBranch: String, targetBranch: String) = CustomTask(
-        title = "GitHub Pull Request UI",
+        title = "gitHubPullRequest",
         validation = StepTask.Validation(
             "$githubUrl/$githubGroup/$githubProject/compare/$targetBranch...$sourceBranch" +
                     "\n\nPull Request merged ?"
@@ -197,7 +197,7 @@ open class GradleStepReleaseExtension {
     )
 
     fun githubRelease() = CustomTask(
-        title = "GitHub Release UI",
+        title = "gitHubRelease",
         validation = StepTask.Validation(
             "$githubUrl/$githubGroup/$githubProject/releases/new" +
                     "\n\nRelease Created ?"
@@ -205,7 +205,7 @@ open class GradleStepReleaseExtension {
     )
 
     fun githubMilestone() = CustomTask(
-        title = "GitHub Milestone UI",
+        title = "gitHubMilestone",
         validation = StepTask.Validation(
             "$githubUrl/$githubGroup/$githubProject/milestones/new" +
                     "\n\nMilestone Created ?"
