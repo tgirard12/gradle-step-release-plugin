@@ -1,13 +1,11 @@
 package com.tgirard12.gradlestepreleaseplugin
 
-
 /**
  *
  */
-data class Step(
-    val title: String,
-    val validation: Validation? = null,
-    val step: () -> Any? = { Unit }
+sealed class StepTask(
+    open val validation: Validation? = null,
+    open val step: () -> Any? = { Unit }
 ) {
     var stepResult: Any? = null
 
@@ -15,4 +13,15 @@ data class Step(
         val message: String,
         val beforeMessage: () -> Unit = {}
     )
+}
+
+/**
+ *
+ */
+data class CustomTask(
+    val title: String,
+    override val validation: Validation? = null,
+    override val step: () -> Any? = { Unit }
+) : StepTask(validation, step) {
+
 }
