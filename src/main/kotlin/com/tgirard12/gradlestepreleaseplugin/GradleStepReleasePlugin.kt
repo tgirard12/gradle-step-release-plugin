@@ -39,33 +39,34 @@ open class GradleStepReleasePlugin : Plugin<Project> {
                         }
                     }
                     is OtherTask -> {
-                        val createTask = proj.tasks.create(
+                        proj.tasks.create(
                             "${index.index()}_${step.projectName() ?: ""}_${step.taskName()}"
                         ) { task ->
                             task.group = groupName
-                        }
-                        val baseProject = step.projectName()?.let {
-                            proj.allprojects
-                                .firstOrNull { it.name == step.projectName() }
-                        } ?: proj
 
-                        baseProject.getTasksByName(step.taskName(), false)
-                            .firstOrNull()
-                            .also {
-                                if (it == null)
-                                    throw IllegalArgumentException("$rootTaskName gradle Task `${step.taskName()}` not found")
-                                else
-                                    it.setMustRunAfter(listOf(createTask))
-                            }
+                            val baseProject = step.projectName()?.let {
+                                proj.allprojects.firstOrNull { it.name == step.projectName() }
+                            } ?: proj
+
+                            baseProject.getTasksByName(step.taskName(), false)
+                                .firstOrNull()
+                                .also {
+                                    if (it == null)
+                                        throw IllegalArgumentException(
+                                            "$rootTaskName gradle Task `${step.taskName()}` not found in `${step.projectName()}`"
+                                        )
+                                    else
+                                        task.finalizedBy(it.path)
+                                }
+                        }
                     }
-                }?.let { myTasks += it }
+                }.let { myTasks += it }
             }
 
             myTasks.forEachIndexed { index, task ->
                 if (index > 0)
                     task.setMustRunAfter(listOf(myTasks[index - 1].name))
             }
-
             task.setFinalizedBy(listOf(myTasks.map { it.name }))
         }
     }
