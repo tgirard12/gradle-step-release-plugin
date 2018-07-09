@@ -38,6 +38,26 @@ open class GradleStepReleasePlugin : Plugin<Project> {
                             }
                         }
                     }
+                    is OtherTask -> {
+                        val createTask = proj.tasks.create(
+                            "${index}_${step.projectName() ?: ""}_${step.taskName()}"
+                        ) { task ->
+                            task.group = groupName
+                        }
+                        val baseProject = step.projectName()?.let {
+                            proj.allprojects
+                                .firstOrNull { it.name == step.projectName() }
+                        } ?: proj
+
+                        baseProject.getTasksByName(step.taskName(), false)
+                            .firstOrNull()
+                            .also {
+                                if (it == null)
+                                    throw IllegalArgumentException("$rootTaskName gradle Task `${step.taskName()}` not found")
+                                else
+                                    it.setMustRunAfter(listOf(createTask))
+                            }
+                    }
                 }?.let { myTasks += it }
             }
 

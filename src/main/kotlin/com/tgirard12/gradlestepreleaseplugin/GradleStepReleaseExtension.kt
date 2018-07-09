@@ -52,6 +52,10 @@ open class GradleStepReleaseExtension {
         step = step
     )
 
+    fun task(name: String) = OtherTask(
+        name = name
+    )
+
     // Properties
 
     fun checkProperties(propsKeys: List<String>, propFile: String = gradleProperties) = CustomTask(
