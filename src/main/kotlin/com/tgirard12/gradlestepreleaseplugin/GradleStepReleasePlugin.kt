@@ -26,7 +26,7 @@ open class GradleStepReleasePlugin : Plugin<Project> {
             steps.forEachIndexed { index, step ->
                 when (step) {
                     is CustomTask -> {
-                        proj.tasks.create("${index}_${step.title}") { task ->
+                        proj.tasks.create("${index.index()}_${step.title}") { task ->
                             task.group = groupName
 
                             task.doFirst {
@@ -40,7 +40,7 @@ open class GradleStepReleasePlugin : Plugin<Project> {
                     }
                     is OtherTask -> {
                         val createTask = proj.tasks.create(
-                            "${index}_${step.projectName() ?: ""}_${step.taskName()}"
+                            "${index.index()}_${step.projectName() ?: ""}_${step.taskName()}"
                         ) { task ->
                             task.group = groupName
                         }
@@ -69,6 +69,11 @@ open class GradleStepReleasePlugin : Plugin<Project> {
             task.setFinalizedBy(listOf(myTasks.map { it.name }))
         }
     }
+}
+
+fun Int.index() = when (this) {
+    in 0..9 -> "0$this"
+    else -> this.toString()
 }
 
 fun question(question: String) {
