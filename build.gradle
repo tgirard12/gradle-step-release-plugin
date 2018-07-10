@@ -51,7 +51,7 @@ releaseStep {
     githubProject = "gradle-step-release-plugin"
 
     def gradleFile = "gradle.properties"
-    def props = ["version"]
+    def props = ["project_version"]
 
     def releaseVersion = setProperties(props, gradleFile)
 
