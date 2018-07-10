@@ -149,6 +149,15 @@ open class GradleStepReleaseExtension {
         }
     )
 
+    fun gitCheckChanges() = CustomTask(
+        title = "gitCheckChanges",
+        step = {
+            val lines = exec("git", listOf("status", "--porcelain"))
+            if (lines.input != null && lines.input.isNotEmpty())
+                throw IllegalArgumentException("You repo is not clean, commit your changes first :\n${lines.input}")
+        }
+    )
+
     fun gitCheckBranch(name: () -> String) = CustomTask(
         title = "gitCheckBranch",
         step = {
