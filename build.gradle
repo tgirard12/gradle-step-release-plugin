@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2"
+        classpath "com.tgirard12:gradle-step-release-plugin:0.5.0"
     }
 }
 
@@ -15,6 +16,7 @@ version = project_version
 
 apply plugin: 'kotlin'
 apply from: "gradle/publish.gradle"
+apply plugin: "com.tgirard12.gradle-step-release-plugin"
 
 
 sourceSets {
@@ -41,4 +43,43 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+releaseStep {
+
+    githubGroup = "tgirard12"
+    githubProject = "gradle-step-release-plugin"
+
+    def gradleFile = "gradle.properties"
+    def props = ["version"]
+
+    def releaseVersion = setProperties(props, gradleFile)
+
+    steps = [message { "Release New version" },
+
+             // Set new Release version
+             releaseVersion,
+             checkProperties(props, gradleFile),
+
+             // Commit and create release version
+             gitAdd { [gradleFile] },
+             gitCommit { "v" + releaseVersion.stepResult },
+
+             task(":clean"),
+             task(":test"),
+
+             // Publish on bintray
+             task(":bintrayUpload"),
+             question {
+                 "Publish artifact on jcenter ? +" +
+                         "\n\nhttps://bintray.com/tgirard12/kotlin/gradle-step-release-plugin ?"
+             },
+
+             gitPush("origin", "master"),
+
+             githubRelease(),
+             githubMilestone(),
+
+             message { "Release OK :-)" },
+    ]
 }
