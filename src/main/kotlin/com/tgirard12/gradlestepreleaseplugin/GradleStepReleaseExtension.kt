@@ -149,6 +149,18 @@ open class GradleStepReleaseExtension {
         }
     )
 
+    fun gitCheckBranch(name: () -> String) = CustomTask(
+        title = "gitCheckBranch",
+        step = {
+            val curBranche = exec("git", listOf("rev-parse", "--abbrev-ref", "HEAD"))
+                .input
+                ?.removeSuffix(System.lineSeparator())
+            if (curBranche != name())
+                throw IllegalArgumentException("branch `$curBranche` != `${name()}`")
+            else curBranche
+        }
+    )
+
     // Gitlab Action
 
     var gitlabUrl: String = "https://gitlab.com"
