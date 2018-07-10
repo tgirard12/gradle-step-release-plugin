@@ -34,6 +34,8 @@ open class GradleStepReleasePlugin : Plugin<Project> {
                                     validation.beforeMessage.invoke()
                                     question("${validation.message} [y, yes]")
                                 }
+                            }
+                            task.doLast {
                                 step.stepResult = step.step()
                             }
                         }
