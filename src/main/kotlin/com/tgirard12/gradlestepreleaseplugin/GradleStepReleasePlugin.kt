@@ -20,7 +20,10 @@ open class GradleStepReleasePlugin : Plugin<Project> {
         task.description = "Custom release steps"
 
         project.afterEvaluate { proj ->
-            val steps = proj.extensions.getByType(GradleStepReleaseExtension::class.java).steps
+            val extension = proj.extensions.getByType(GradleStepReleaseExtension::class.java)
+            extension.project = proj
+
+            val steps = extension.steps
             val myTasks = mutableListOf<Task>()
 
             steps.forEachIndexed { index, step ->
@@ -67,9 +70,9 @@ open class GradleStepReleasePlugin : Plugin<Project> {
 
             myTasks.forEachIndexed { index, task ->
                 if (index > 0)
-                    task.setMustRunAfter(listOf(myTasks[index - 1].name))
+                    task.setShouldRunAfter(listOf(myTasks[index - 1].name))
             }
-            task.setFinalizedBy(listOf(myTasks.map { it.name }))
+            task.setDependsOn(listOf(myTasks.map { it.name }))
         }
     }
 }
