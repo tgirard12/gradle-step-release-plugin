@@ -55,7 +55,10 @@ releaseStep {
 
     def releaseVersion = setProperties(props, gradleFile)
 
-    steps = [message { "Release New version" },
+    steps = [message { "Releasing a new version" },
+
+             gitCheckChanges(),
+             gitCheckBranch { "master" },
 
              // Set new Release version
              releaseVersion,
@@ -71,8 +74,8 @@ releaseStep {
              // Publish on bintray
              task(":bintrayUpload"),
              question {
-                 "Publish artifact on jcenter ? +" +
-                         "\n\nhttps://bintray.com/tgirard12/kotlin/gradle-step-release-plugin ?"
+                 "Publish artifact on jcenter ? \n\n" +
+                         "https://bintray.com/tgirard12/kotlin/gradle-step-release-plugin ?"
              },
 
              gitPush("origin", "master"),
@@ -80,6 +83,6 @@ releaseStep {
              githubRelease(),
              githubMilestone(),
 
-             message { "Release OK :-)" },
+             message { "Release v" + releaseVersion.stepResult + " OK :-)" }
     ]
 }
