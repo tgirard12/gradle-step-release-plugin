@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2"
-        classpath "com.tgirard12:gradle-step-release-plugin:0.5.0"
+        classpath "com.tgirard12:gradle-step-release-plugin:0.6.0"
     }
 }
 
