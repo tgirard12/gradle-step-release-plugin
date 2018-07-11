@@ -3,6 +3,7 @@ package com.tgirard12.gradlestepreleaseplugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.GradleBuild
 
 
 open class GradleStepReleasePlugin : Plugin<Project> {
@@ -14,65 +15,55 @@ open class GradleStepReleasePlugin : Plugin<Project> {
 
         // Add the extension object
         project.extensions.create(rootTaskName, GradleStepReleaseExtension::class.java)
-        val task = project.tasks.create(rootTaskName, GradleStepReleaseTask::class.java)
+        project.tasks.create(rootTaskName, GradleStepReleaseTask::class.java) { task ->
 
-        task.group = groupName
-        task.description = "Custom release steps"
+            task.group = groupName
+            task.description = "Custom release steps"
 
-        project.afterEvaluate { proj ->
-            val extension = proj.extensions.getByType(GradleStepReleaseExtension::class.java)
-            extension.project = proj
+            project.afterEvaluate { proj ->
+                val extension = proj.extensions.getByType(GradleStepReleaseExtension::class.java)
+                extension.project = proj
 
-            val steps = extension.steps
-            val myTasks = mutableListOf<Task>()
+                val steps = extension.steps
+                val myTasks = mutableListOf<Task>()
 
-            steps.forEachIndexed { index, step ->
-                when (step) {
-                    is CustomTask -> {
-                        proj.tasks.create("${index.index()}_${step.title}") { task ->
-                            task.group = groupName
+                steps.forEachIndexed { index, step ->
+                    when (step) {
+                        is CustomTask -> {
+                            proj.tasks.create("${index.index()}_${step.title}") { task ->
+                                task.group = groupName
 
-                            task.doFirst {
-                                step.validation?.let { validation ->
-                                    validation.beforeMessage.invoke()
-                                    question("${validation.message} [y, yes]")
+                                task.doFirst {
+                                    step.validation?.let { validation ->
+                                        validation.beforeMessage.invoke()
+                                        question("${validation.message} [y, yes]")
+                                    }
+                                }
+                                task.doLast {
+                                    step.stepResult = step.step()
                                 }
                             }
-                            task.doLast {
-                                step.stepResult = step.step()
+                        }
+                        is OtherTask -> {
+                            proj.tasks.create(
+                                "${index.index()}_${step.name.split(":").joinToString(separator = "_")}",
+                                GradleBuild::class.java
+                            ) { task ->
+                                task.group = groupName
+                                task.startParameter = proj.gradle.startParameter.newInstance().apply {
+                                    setTaskNames(listOf(step.name))
+                                }
                             }
                         }
-                    }
-                    is OtherTask -> {
-                        proj.tasks.create(
-                            "${index.index()}_${step.projectName() ?: ""}_${step.taskName()}"
-                        ) { task ->
-                            task.group = groupName
+                    }.let { myTasks += it }
+                }
 
-                            val baseProject = step.projectName()?.let {
-                                proj.allprojects.firstOrNull { it.name == step.projectName() }
-                            } ?: proj
-
-                            baseProject.getTasksByName(step.taskName(), false)
-                                .firstOrNull()
-                                .also {
-                                    if (it == null)
-                                        throw IllegalArgumentException(
-                                            "$rootTaskName gradle Task `${step.taskName()}` not found in `${step.projectName()}`"
-                                        )
-                                    else
-                                        task.finalizedBy(it.path)
-                                }
-                        }
-                    }
-                }.let { myTasks += it }
+                myTasks.forEachIndexed { index, task ->
+                    if (index > 0)
+                        task.setShouldRunAfter(listOf(myTasks[index - 1].name))
+                }
+                task.setDependsOn(listOf(myTasks.map { it.name }))
             }
-
-            myTasks.forEachIndexed { index, task ->
-                if (index > 0)
-                    task.setShouldRunAfter(listOf(myTasks[index - 1].name))
-            }
-            task.setDependsOn(listOf(myTasks.map { it.name }))
         }
     }
 }
